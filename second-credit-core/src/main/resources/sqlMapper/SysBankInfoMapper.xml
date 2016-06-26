@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wm.service.dao.SysBankInfoDao" >
+
+  <resultMap id="BaseResultMap" type="com.wm.service.model.SysBankInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="bank_code" property="bankCode" jdbcType="VARCHAR" />
+    <result column="bank_name" property="bankName" jdbcType="VARCHAR" />
+    <result column="swift_code" property="swiftCode" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, bank_code, bank_name, swift_code, create_time, update_time
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_bank_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insert" parameterType="com.wm.service.model.SysBankInfo" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="BEFORE" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_bank_info (
+    	id, 
+    	bank_code, 
+    	bank_name, 
+      	swift_code, 
+      	create_time, 
+      	update_time
+      )values (
+      	#{id,jdbcType=BIGINT}, 
+   		#{bankCode,jdbcType=VARCHAR}, 
+   		#{bankName,jdbcType=VARCHAR}, 
+      	#{swiftCode,jdbcType=VARCHAR}, 
+      	now(), 
+      	now()
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.wm.service.model.SysBankInfo" >
+    update sys_bank_info
+    <set >
+      <if test="bankCode != null" >
+        bank_code = #{bankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bank_name = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="swiftCode != null" >
+        swift_code = #{swiftCode,jdbcType=VARCHAR},
+      </if>
+        update_time = now(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

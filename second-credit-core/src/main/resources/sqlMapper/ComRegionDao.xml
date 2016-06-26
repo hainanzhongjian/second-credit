@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wm.service.dao.ComRegionDao" >
+
+  <resultMap id="BaseResultMap" type="com.ishidai.core.model.ComRegion" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="left" property="left" jdbcType="INTEGER" />
+    <result column="right" property="right" jdbcType="INTEGER" />
+    <result column="layer" property="layer" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="base_columns">
+  		id,
+  		name, 
+    	left, 
+      	right, 
+      	layer, 
+      	create_time, 
+      	update_time
+  </sql>
+
+  <insert id="insert" parameterType="com.ishidai.core.model.ComRegion" >
+    insert into com_region (
+    	name, 
+    	left, 
+      	right, 
+      	layer, 
+      	create_time, 
+      	update_time
+    )values (
+    	#{name,jdbcType=VARCHAR}, 
+    	#{left,jdbcType=INTEGER}, 
+      	#{right,jdbcType=INTEGER}, 
+      	#{layer,jdbcType=INTEGER}, 
+      	now(), 
+      	now()
+    )
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.ishidai.core.model.ComRegion" >
+    update com_region
+    set name = #{name,jdbcType=VARCHAR},
+      left = #{left,jdbcType=INTEGER},
+      right = #{right,jdbcType=INTEGER},
+      layer = #{layer,jdbcType=INTEGER},
+      update_time = now()
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    	<include refid="base_columns"></include>
+    from com_region
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <!-- 获取根节点-->
+  <select id="selectRootPoints" resultMap="BaseResultMap" >
+    select
+    <include refid="base_columns"></include>
+    from com_region
+    where layer = 1
+  </select>
+
+  <!-- 依据name和layer获取节点-->
+  <select id="selectByNameLayer" resultMap="BaseResultMap" >
+    select
+    	<include refid="base_columns"></include>
+    from com_region
+    where
+      name = #{name,jdbcType=VARCHAR}
+      and layer = #{layer,jdbcType=INTEGER}
+  </select>
+
+  <!-- 依据父point(left,right)和layer获取节点的子节点list-->
+  <select id="selectNextByPointsLayer" resultMap="BaseResultMap" >
+    select
+    	<include refid="base_columns"></include>
+    from com_region
+    where
+      left &lt; #{left,jdbcType=INTEGER}
+      and right &lt; #{right,jdbcType=INTEGER}
+      and layer = #{layer,jdbcType=INTEGER} +1
+  </select>
+
+  <!-- 依据父point(left,right)和layer和子point、name获取节点的子节点-->
+  <select id="selectNextByPointsLayerName" resultMap="BaseResultMap" >
+    select
+    <include refid="base_columns"></include>
+    from com_region
+    where
+    left &lt; #{left,jdbcType=INTEGER}
+    and right &lt; #{right,jdbcType=INTEGER}
+    and layer = #{layer,jdbcType=INTEGER} +1
+    and name = #{name,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 依据point(left,right)和layer和name获取节点的子节点list的一个节点-->
+  <select id="selectOneByPointsLayerName" resultMap="BaseResultMap" >
+    select
+    <include refid="base_columns"></include>
+    from com_region
+    where
+      left &lt; #{left,jdbcType=INTEGER}
+      and right &lt; #{right,jdbcType=INTEGER}
+      and layer = #{layer,jdbcType=INTEGER} +1
+      and name = #{name,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    	<include refid="base_columns"></include>
+    from com_region
+  </select>
+  
+</mapper>

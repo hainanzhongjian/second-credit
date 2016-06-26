@@ -10,11 +10,11 @@
   <name>second-credit</name>
   <url>http://maven.apache.org</url>
   
-  
   <!-- 多模块设置 -->
   <modules>
-  	<module>second-credit-utils</module>
+  	<module>second-credit-core</module>
   	<module>second-credit-spider</module>
+  	<module>second-credit-main</module>
   </modules>
   
   <build>

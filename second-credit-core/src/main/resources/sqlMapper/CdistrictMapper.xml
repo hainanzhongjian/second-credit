@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wm.service.dao.CdistrictDao" >
+
+  <resultMap id="BaseResultMap" type="com.wm.service.model.Cdistrict" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="left" property="left" jdbcType="BIGINT" />
+    <result column="right" property="right" jdbcType="BIGINT" />
+    <result column="layer" property="layer" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="base_column_list">
+  		id, 
+  		code, 
+  		name, 
+      	left, 
+      	right, 
+      	create_time, 
+      	update_time
+  </sql>
+  
+   <!-- 获取某一个节点下的子节点 -->
+  <select id="getChildNodeByNode" parameterType="com.wm.service.model.Cdistrict" resultMap="BaseResultMap">
+  	select 
+  		<include refid="base_column_list"></include>
+    from c_district
+    where 
+    	left &gt; #{left}
+    	and right &lt; #{right}
+    	and layer = #{layer}+1
+  </select>
+  
+</mapper>
