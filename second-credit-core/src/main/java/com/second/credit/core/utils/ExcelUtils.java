@@ -87,74 +87,6 @@ public class ExcelUtils {
         }
         int rowNum = 1;
         // 生成行列表
-
-        // modify by huguoxing 解决空置指针异常问题
-        if (recordLt != null && recordLt.size() > 0) {
-            for (int k = 0; k < recordLt.size(); k++) {
-                // 创建行
-                row = sheet1.createRow((int) rowNum);
-                int cellNo = 0;
-                for (int i = 0; i < cellNameLt.size(); i++) {
-                    Cell cell = row.createCell(cellNo);
-                    // 获取对应的列的值
-                    if (recordLt.get(k) != null) {
-                        Object value = PropertyUtils.getProperty(recordLt.get(k), cellNameLt.get(i));
-                        String data = formateExcelData(value);
-                        cell.setCellValue(createHelper.createRichTextString(data));
-                    } else {
-                        cell.setCellValue("");
-                    }
-
-                    ++cellNo;
-                }
-                ++rowNum;
-            }
-        }
-        return wb;
-
-    }
-
-    /**
-     * 生成excel文件 titleMp 对应结果集的字段名称为Key
-     * ,显示在Excel标题的内容为值.例：name-->姓名,日期类型调用dateformate2
-     * 
-     * @param titleMp
-     * @param recordLt
-     *            输出的结果集
-     * @param file
-     *            文件
-     * @return
-     * @throws Exception
-     */
-    public static Workbook createFile2(Workbook wb, Map<String, String> titleMp, List<?> recordLt, String sheetName)
-            throws Exception { // NOSONAR
-        CreationHelper createHelper = wb.getCreationHelper();
-        String safeName = WorkbookUtil.createSafeSheetName(sheetName);
-        // 创建sheet
-        Sheet sheet1 = wb.createSheet(safeName);
-
-        // 设置标题单元格样式
-        CellStyle titlestyle = wb.createCellStyle();
-        Row row = sheet1.createRow((int) 0);
-        // 生成标题
-        Iterator iter = titleMp.entrySet().iterator();
-        int cellNum = 0;
-
-        List<String> cellNameLt = new ArrayList<String>();
-
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Object val = entry.getValue();
-            Cell cell = row.createCell(cellNum);
-            cell.setCellValue(createHelper.createRichTextString(val.toString()));
-            cell.setCellStyle(titlestyle);
-            // title列宽自适应
-            sheet1.setColumnWidth(cellNum, val.toString().getBytes().length * 2 * 256);
-            ++cellNum;
-            cellNameLt.add(entry.getKey().toString());
-        }
-        int rowNum = 1;
-        // 生成行列表
         for (int k = 0; k < recordLt.size(); k++) {
             // 创建行
             row = sheet1.createRow((int) rowNum);
@@ -164,11 +96,12 @@ public class ExcelUtils {
                 // 获取对应的列的值
                 if (recordLt.get(k) != null) {
                     Object value = PropertyUtils.getProperty(recordLt.get(k), cellNameLt.get(i));
-                    String data = formateExcelData2(value);
+                    String data = formateExcelData(value);
                     cell.setCellValue(createHelper.createRichTextString(data));
                 } else {
                     cell.setCellValue("");
                 }
+
                 ++cellNo;
             }
             ++rowNum;
@@ -233,25 +166,6 @@ public class ExcelUtils {
     }
 
     /**
-     * 格式化excel导出数据
-     * 
-     * @param value
-     */
-    private static String formateExcelData2(Object value) {
-        if (null == value) {
-            return null;
-        } else {
-            if (value instanceof Date) {
-                value = dateformate2.format(value);
-            }
-            if (value instanceof Double) {
-                value = NumberUtils.formatNumber(Double.parseDouble(value.toString()));
-            }
-            return value.toString();
-        }
-    }
-
-    /**
      * 文件下载
      * 
      * @author: yinjunlu
@@ -261,7 +175,7 @@ public class ExcelUtils {
      */
     public static void downFile(HttpServletResponse response, File file) {
         try {
-            FileInputStream fs = new FileInputStream(file); // NOSONAR
+            FileInputStream fs = new FileInputStream(file);
             response.reset();
             response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-Disposition",
@@ -273,8 +187,8 @@ public class ExcelUtils {
             }
             fs.close();
             out.close();
-        } catch (Exception e) { // NOSONAR
-            e.printStackTrace(); // NOSONAR
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -289,88 +203,96 @@ public class ExcelUtils {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    @SuppressWarnings("deprecation")
-    public static List<String[]> readExcel(File file, int ignoreRows) throws FileNotFoundException, IOException {
+    public static List<String[]> readExcel(File file, int ignoreRows) {
         List<String[]> result = new ArrayList<String[]>();
         int rowSize = 0;
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-        // 打开HSSFWorkbook
-        POIFSFileSystem fs = new POIFSFileSystem(in);
-        HSSFWorkbook wb = new HSSFWorkbook(fs);
-        HSSFCell cell = null;
-        for (int sheetIndex = 0; sheetIndex < wb.getNumberOfSheets(); sheetIndex++) {
-            HSSFSheet st = wb.getSheetAt(sheetIndex);
-            // 第一行为标题，不取
-            for (int rowIndex = ignoreRows; rowIndex <= st.getLastRowNum(); rowIndex++) {
-                HSSFRow row = st.getRow(rowIndex);
-                if (row == null) {
-                    continue;
-                }
-                int tempRowSize = row.getLastCellNum() + 1;
-                if (tempRowSize > rowSize) {
-                    rowSize = tempRowSize;
-                }
-                String[] values = new String[rowSize];
-                Arrays.fill(values, "");
-                boolean hasValue = false;
-                for (short columnIndex = 0; columnIndex <= row.getLastCellNum(); columnIndex++) {
-                    String value = "";
-                    cell = row.getCell(columnIndex);
-                    if (cell != null) {
-                        // 注意：一定要设成这个，否则可能会出现乱码
-                        // cell.setEncoding(HSSFCell.ENCODING_UTF_16);
-                        switch (cell.getCellType()) {
-                            case HSSFCell.CELL_TYPE_STRING:
-                                value = cell.getStringCellValue();
-                                break;
-                            case HSSFCell.CELL_TYPE_NUMERIC:
-                                if (HSSFDateUtil.isCellDateFormatted(cell)) {
-                                    Date date = cell.getDateCellValue();
-                                    if (date != null) {
-                                        value = new SimpleDateFormat("yyyy-MM-dd").format(date);
-                                    } else {
-                                        value = "";
-                                    }
-                                } else {
-                                    value = new DecimalFormat("0").format(cell.getNumericCellValue());
-                                }
-                                break;
-                            case HSSFCell.CELL_TYPE_FORMULA:
-                                // 导入时如果为公式生成的数据则无值
-                                if (!cell.getStringCellValue().equals("")) {
+        BufferedInputStream in = null;
+        HSSFWorkbook wb = null;
+        POIFSFileSystem fs = null;
+        try {
+            in = new BufferedInputStream(new FileInputStream(file));
+            fs = new POIFSFileSystem(in);
+            wb = new HSSFWorkbook(fs);
+            HSSFCell cell = null;
+            for (int sheetIndex = 0; sheetIndex < wb.getNumberOfSheets(); sheetIndex++) {
+                HSSFSheet st = wb.getSheetAt(sheetIndex);
+                // 第一行为标题，不取
+                for (int rowIndex = ignoreRows; rowIndex <= st.getLastRowNum(); rowIndex++) {
+                    HSSFRow row = st.getRow(rowIndex);
+                    if (row == null) {
+                        continue;
+                    }
+                    int tempRowSize = row.getLastCellNum() + 1;
+                    if (tempRowSize > rowSize) {
+                        rowSize = tempRowSize;
+                    }
+                    String[] values = new String[rowSize];
+                    Arrays.fill(values, "");
+                    boolean hasValue = false;
+                    for (short columnIndex = 0; columnIndex <= row.getLastCellNum(); columnIndex++) {
+                        String value = "";
+                        cell = row.getCell(columnIndex);
+                        if (cell != null) {
+                            // 注意：一定要设成这个，否则可能会出现乱码
+                            // cell.setEncoding(HSSFCell.ENCODING_UTF_16);
+                            switch (cell.getCellType()) {
+                                case HSSFCell.CELL_TYPE_STRING:
                                     value = cell.getStringCellValue();
-                                } else {
-                                    value = cell.getNumericCellValue() + "";
-                                }
-                                break;
-                            case HSSFCell.CELL_TYPE_BLANK:
-                                break;
-                            case HSSFCell.CELL_TYPE_ERROR:
-                                value = "";
-                                break;
-                            case HSSFCell.CELL_TYPE_BOOLEAN:
-                                value = (cell.getBooleanCellValue() == true ? "Y" : "N");
-                                break;
-                            default:
-                                value = "";
+                                    break;
+                                case HSSFCell.CELL_TYPE_NUMERIC:
+                                    if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                                        Date date = cell.getDateCellValue();
+                                        if (date != null) {
+                                            value = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                                        } else {
+                                            value = "";
+                                        }
+                                    } else {
+                                        value = new DecimalFormat("0").format(cell.getNumericCellValue());
+                                    }
+                                    break;
+                                case HSSFCell.CELL_TYPE_FORMULA:
+                                    // 导入时如果为公式生成的数据则无值
+                                    if (!cell.getStringCellValue().equals("")) {
+                                        value = cell.getStringCellValue();
+                                    } else {
+                                        value = cell.getNumericCellValue() + "";
+                                    }
+                                    break;
+                                case HSSFCell.CELL_TYPE_BLANK:
+                                    break;
+                                case HSSFCell.CELL_TYPE_ERROR:
+                                    value = "";
+                                    break;
+                                case HSSFCell.CELL_TYPE_BOOLEAN:
+                                    value = (cell.getBooleanCellValue() == true ? "Y" : "N");
+                                    break;
+                                default:
+                                    value = "";
+                            }
                         }
+                        if (columnIndex == 0 && value.trim().equals("")) {
+                            break;
+                        }
+                        values[columnIndex] = rightTrim(value);
+                        hasValue = true;
                     }
-                    if (columnIndex == 0 && value.trim().equals("")) {
-                        break;
+                    if (hasValue) {
+                        result.add(values);
                     }
-                    values[columnIndex] = rightTrim(value);
-                    hasValue = true;
-                }
-                if (hasValue) {
-                    result.add(values);
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        in.close();
-        // String[][] returnArray = new String[result.size()][rowSize];
-        // for (int i = 0; i < returnArray.length; i++) {
-        // returnArray[i] = (String[]) result.get(i);
-        // }
         return result;
     }
 
