@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+     	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     	http://www.springframework.org/schema/context 
+     	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+     		
+	<!-- 第一步：装载定时器  -->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="baidu_trigger" />
+			</list>
+		</property>
+		<property name="autoStartup">
+			<value>true</value>
+		</property>
+		<property name="configLocation" value="classpath:properties/quartz.properties" />
+	</bean>
+	
+    <!-- 第二步：启动定时器    每10分钟扫描一次-->
+	<bean id="baidu_trigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="baidu_taskDetail" />
+		<property name="cronExpression">
+			<value>0 0/10 0 * * ?</value>
+		</property>
+    </bean>
+    
+    <!-- 第三步：执行方法-->
+    <bean id="baidu_Task" class="com.wm.service.task.BaiduTask"></bean>
+    <bean id="baidu_taskDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="baidu_Task" />
+		<property name="targetMethod" value="captureBaiduDistrict" />
+		<!-- 防止并发 -->
+		<property name="concurrent" value="false" />
+	</bean>
+	
+</beans>

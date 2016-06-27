@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+	    http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- 1:自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="com.wm.service" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+	
+	<!-- 2:将StringHttpMessageConverter的默认编码设为UTF-8 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+		    	<constructor-arg value="UTF-8" />
+			</bean>
+  		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<!-- 3:面向切面编程 -->
+	<aop:aspectj-autoproxy  proxy-target-class="true"></aop:aspectj-autoproxy>	
+	
+	<!-- 4:定义JSP文件的位置 --> 
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+			
+	<!-- 5:异常统一处理 -->
+ 	<bean id="exceptionResolver" class="com.wm.service.interceptor.ExceptionHandler"></bean>
+	
+	<!-- 6:拦截器 -->
+	<!-- 过滤 根目录下 必须匹配 /*/** 即：必须需要两级或者三级目录才过滤        
+		/:过滤根目录
+		/*:过滤根目录所有
+		/*/*:过滤根目录下二级目录
+		/*/**:过滤根目录下所有的
+		一个*：代表文件夹  两个** 代表文件夹下的文件夹
+		只过滤某一些controller
+	 -->
+     <mvc:interceptors>
+    	<!--请求拦截器 -->
+        <mvc:interceptor>
+        	<!--拦截根目录下所有的请求-->
+            <mvc:mapping path="/*/**"/> 
+        	<!--排除/jump/istatic/iimages的请求-->
+            <!-- <mvc:exclude-mapping path="/jump/**"/> -->
+            <bean class="com.wm.service.interceptor.ResetInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    
+	<!-- 7:容器默认的DefaultServletHandler处理 所有静态内容与无RequestMapping处理的URL-->	
+	<mvc:default-servlet-handler/>
+	
+</beans>

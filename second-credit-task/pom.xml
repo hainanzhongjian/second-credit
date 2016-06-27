@@ -6,11 +6,11 @@
     <version>1.0</version>
   </parent>
   
-  <artifactId>second-credit-spider</artifactId>
-  <name>second-credit-spider</name>
+  <artifactId>second-credit-task</artifactId>
+  <name>second-credit-task</name>
   <packaging>jar</packaging>
   <url>http://maven.apache.org</url>
-  <description>爬虫业务层</description>
+  <description>任务层</description>
   
    <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

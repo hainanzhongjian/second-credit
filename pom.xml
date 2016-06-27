@@ -14,7 +14,8 @@
   <modules>
   	<module>second-credit-core</module>
   	<module>second-credit-spider</module>
-  	<module>second-credit-main</module>
+  	<module>second-credit-api</module>
+  	<module>second-credit-task</module>
   </modules>
   
   <build>
