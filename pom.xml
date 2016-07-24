@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- 基础设置 -->
@@ -10,12 +10,13 @@
   <name>second-credit</name>
   <url>http://maven.apache.org</url>
   
-  <!-- 多模块设置 -->
+  <!-- 多模块设�? -->
   <modules>
   	<module>second-credit-core</module>
   	<module>second-credit-spider</module>
   	<module>second-credit-api</module>
   	<module>second-credit-task</module>
+    <module>second-credit-comm</module>
   </modules>
   
   <build>
@@ -87,7 +88,7 @@
 		</repository>
 	</repositories>
 
-  	<!-- 核心资源库 -->
+  	<!-- 核心资源�? -->
   <dependencies>
 	<dependency>
 		<groupId>org.apache.commons</groupId>
