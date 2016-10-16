@@ -17,6 +17,11 @@
   </properties>
   
   <dependencies>
+  	<dependency>
+  	  <groupId>com.wm.credit</groupId>
+  	  <artifactId>second-credit-comm</artifactId>
+  	  <version>1.0</version>
+  	</dependency>
   </dependencies>
   
   <build>

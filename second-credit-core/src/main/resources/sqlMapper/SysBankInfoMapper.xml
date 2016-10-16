@@ -21,6 +21,12 @@
     from sys_bank_info
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_bank_info
+  </select>
 
   <insert id="insert" parameterType="com.wm.service.model.SysBankInfo" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="BEFORE" >

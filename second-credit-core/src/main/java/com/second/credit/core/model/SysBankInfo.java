@@ -13,6 +13,11 @@ public class SysBankInfo implements Serializable {
     private Long id;
 
     /**
+     * 银行编号Id
+     */
+    private String bankId;
+
+    /**
      * 银行编号简称
      */
     private String bankCode;
@@ -83,5 +88,13 @@ public class SysBankInfo implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(String bankId) {
+        this.bankId = bankId;
     }
 }

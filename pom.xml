@@ -10,7 +10,7 @@
   <name>second-credit</name>
   <url>http://maven.apache.org</url>
   
-  <!-- 多模块设�? -->
+  <!-- 多模块设�? -->
   <modules>
   	<module>second-credit-core</module>
   	<module>second-credit-spider</module>
@@ -59,6 +59,8 @@
     <poi.version>3.9</poi.version>
     <commons-lang3.version>3.1</commons-lang3.version>
     <commons-beanutils.version>1.9.2</commons-beanutils.version>
+    <gson.version>2.2.2</gson.version>
+    <junit.version>3.8.1</junit.version>
   </properties>
   
 	<repositories>
@@ -88,7 +90,7 @@
 		</repository>
 	</repositories>
 
-  	<!-- 核心资源�? -->
+  	<!-- 核心资源�? -->
   <dependencies>
 	<dependency>
 		<groupId>org.apache.commons</groupId>
@@ -310,6 +312,19 @@
 	    <artifactId>commons-beanutils</artifactId>
 	    <version>${commons-beanutils.version}</version>
 	</dependency>
+	<!-- gson 依赖 -->
+	<dependency>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
+		<version>${gson.version}</version>
+	</dependency>
+	<!-- junit 依赖 -->
+	<dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
 </project>
