@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.second.credit.core.model.Cdistrict;
 
-public interface CdistrictDao extends BaseDao {
+public interface CdistrictDao {
 
     int deleteByPrimaryKey(Long id);
 
