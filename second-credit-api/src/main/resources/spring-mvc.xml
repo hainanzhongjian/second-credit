@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 	<!-- 1:自动扫描且只扫描@Controller -->
-	<context:component-scan base-package="com.wm.service" use-default-filters="false">
+	<context:component-scan base-package="com.second.credit" use-default-filters="false">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
 	</context:component-scan>
@@ -37,29 +37,6 @@
 		<property name="suffix" value=".jsp"/>
 	</bean>
 			
-	<!-- 5:异常统一处理 -->
- 	<bean id="exceptionResolver" class="com.wm.service.interceptor.ExceptionHandler"></bean>
-	
-	<!-- 6:拦截器 -->
-	<!-- 过滤 根目录下 必须匹配 /*/** 即：必须需要两级或者三级目录才过滤        
-		/:过滤根目录
-		/*:过滤根目录所有
-		/*/*:过滤根目录下二级目录
-		/*/**:过滤根目录下所有的
-		一个*：代表文件夹  两个** 代表文件夹下的文件夹
-		只过滤某一些controller
-	 -->
-     <mvc:interceptors>
-    	<!--请求拦截器 -->
-        <mvc:interceptor>
-        	<!--拦截根目录下所有的请求-->
-            <mvc:mapping path="/*/**"/> 
-        	<!--排除/jump/istatic/iimages的请求-->
-            <!-- <mvc:exclude-mapping path="/jump/**"/> -->
-            <bean class="com.wm.service.interceptor.ResetInterceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
-    
 	<!-- 7:容器默认的DefaultServletHandler处理 所有静态内容与无RequestMapping处理的URL-->	
 	<mvc:default-servlet-handler/>
 	

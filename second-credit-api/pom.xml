@@ -25,24 +25,61 @@
 	  </dependency>
   </dependencies>
   
-  <build>
-        <plugins>
+ <profiles>
+        <!-- 开发环境 -->
+    	<profile>
+    		<id>dev</id>
+    		<properties>
+    			<profiles.active>dev</profiles.active>
+    		</properties>
+    	</profile>
+    	<!-- test环境 -->
+        <profile>
+            <id>test</id>
+    		<properties>
+    			<profiles.active>test</profiles.active>
+    		</properties>
+    		<!-- 默认打包环境 -->
+    		<activation>
+    			<activeByDefault>true</activeByDefault>
+    		</activation>
+        </profile>
+        <!-- 生产环境 -->
+        <profile>
+            <id>product</id>
+    		<properties>
+    			<profiles.active>product</profiles.active>
+    		</properties>
+        </profile>
+    </profiles>
+    
+    <build>
+    	<plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                    </archive>
-                    <webResources>
-                        <resource>
-                        	<filtering>true</filtering>
-				            <directory>src/main/resources</directory>  
-				            <targetPath>WEB-INF/classes</targetPath>
-                        </resource>
-                    </webResources>
-                </configuration>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
             </plugin>
         </plugins>
+    
+    	<resources>
+    		<!-- 加载公用resources文件 -->
+    		<resource>
+    			<!-- 资源文件路径 -->
+    			<directory>src/main/resources</directory>
+    			<!-- 资源根目录排除各环境的配置，使用单独的资源目录来指定 -->
+    			<excludes>
+	                <exclude>dev/*</exclude>
+	                <exclude>test/*</exclude>
+	                <exclude>product/*</exclude>  
+    			</excludes>
+    		</resource>
+    		<!-- 加载例外resources文件 -->
+            <resource>  
+            	<!-- 只加载development、test、product下的资源文件-->
+            	<directory>src/main/resources/${profiles.active}</directory> 
+            	<filtering>true</filtering>
+        	</resource>
+    	</resources>
     </build>
 </project>
