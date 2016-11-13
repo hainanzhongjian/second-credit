@@ -9,7 +9,7 @@
   
   <artifactId>second-credit-api</artifactId>
   <name>second-credit-api</name>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <url>http://maven.apache.org</url>
   <description>接口服务mouble</description>
   
