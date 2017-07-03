@@ -1,6 +1,7 @@
 package com.second.credit.core.model.baobao;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,7 +31,7 @@ public class Staff implements Serializable {
     /**
      * @note 考勤
      */
-    private Map<String, String[]> attendance;
+    private Map<String, List<Integer>> attendance;
 
     public String getJobNumber() {
         return jobNumber;
@@ -56,11 +57,11 @@ public class Staff implements Serializable {
         this.branch = branch;
     }
 
-    public Map<String, String[]> getAttendance() {
+    public Map<String, List<Integer>> getAttendance() {
         return attendance;
     }
 
-    public void setAttendance(Map<String, String[]> attendance) {
+    public void setAttendance(Map<String, List<Integer>> attendance) {
         this.attendance = attendance;
     }
 

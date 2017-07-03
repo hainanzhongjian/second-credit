@@ -91,6 +91,8 @@ public class ExcelUtils {
             // 创建行
             row = sheet1.createRow((int) rowNum);
             int cellNo = 0;
+
+            // 列操作
             for (int i = 0; i < cellNameLt.size(); i++) {
                 Cell cell = row.createCell(cellNo);
                 // 获取对应的列的值
@@ -116,10 +118,27 @@ public class ExcelUtils {
      * @author wangmeng
      * @time 2015年1月28日下午4:17:39
      */
-    public static void workbookToFile(Workbook wb, File file) throws Exception { // NOSONAR
-        FileOutputStream fileOut = new FileOutputStream(file);
-        wb.write(fileOut);
-        fileOut.close();
+    public static void workbookToFile(Workbook wb, File file) { // NOSONAR
+        FileOutputStream fileOut = null;
+        try {
+            if (file.exists()) {
+                file.delete();
+            }
+            fileOut = new FileOutputStream(file);
+            wb.write(fileOut);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fileOut != null) {
+                    fileOut.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
     }
 
     /**
