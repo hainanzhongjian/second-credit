@@ -3,6 +3,8 @@ package com.second.credit.api.service;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.second.credit.comm.utils.DateUtils;
 import com.second.credit.comm.utils.RegexUtils;
 import com.second.credit.core.model.baobao.Staff;
 import com.second.credit.core.model.baobao.StaffShow;
@@ -110,7 +113,20 @@ public class BaoBaoService {
                     e.printStackTrace();
                 }
                 List<Integer> oneDayAttendanceList = entry.getValue();
-                oneShow.setDate(entry.getKey());
+                Date nowYearMonth = DateUtils.formatDateStr("2017-06-03", DateUtils.PATTERN_YEAR_MONTH);
+                Date oneDay = DateUtils.addDays(nowYearMonth, Integer.parseInt(entry.getKey()));
+                oneShow.setDate(DateUtils.formatDate(oneDay, DateUtils.PATTERN_DEFAULT));
+
+                // 根据部门区分休息日
+                Calendar ca = Calendar.getInstance();
+                ca.setTime(oneDay);
+                if (ca.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+                        || ca.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                    list.add(oneShow);
+                    continue;
+                }
+
+                // 执行工作日
                 if (oneDayAttendanceList.size() == 1) {
                     int time = oneDayAttendanceList.get(0);
                     if (time == 0) {
