@@ -24,22 +24,45 @@ import com.second.credit.core.utils.ExcelUtils;
 
 public class BaoBaoService {
 
-    static Map<String, Map<String, Integer>> attendanceMap;
+    static Map<String, Map<String, String>> attendanceMap;
+
+    private final static String MOUTNDATE = "2017-05";
+    private final static int MONTH = 5;
 
     static {
         attendanceMap = new HashMap<>();
-        Map<String, Integer> branchAttendance = new HashMap<>();
-        branchAttendance.put("startTime", 830);
-        branchAttendance.put("endTime", 1730);
-        attendanceMap.put("财务部", branchAttendance);
+        Map<String, String> branchAttendance = new HashMap<>();
+        branchAttendance.put("startTime", "8:30");
+        branchAttendance.put("endTime", "17:30");
+
+        // --财务部
+        Map<String, String> caiwu = new HashMap<>();
+        caiwu.put("startTime", "8:30");
+        caiwu.put("endTime", "17:00");
+        attendanceMap.put("财务部", caiwu);
+        // --市场部
         attendanceMap.put("市场部", branchAttendance);
+        // --留学部
         attendanceMap.put("留学部", branchAttendance);
+        // --教学部
         attendanceMap.put("教学部", branchAttendance);
-        attendanceMap.put("意语部课程", branchAttendance);
+        // --意语部课程
+        Map<String, String> yiyu = new HashMap<>();
+        yiyu.put("startTime", "8:30");
+        yiyu.put("endTime", "17:30");
+        attendanceMap.put("意语部课程", yiyu);
+        // --产品创新
         attendanceMap.put("产品创新", branchAttendance);
+        // --国际部
         attendanceMap.put("国际部", branchAttendance);
+        // --人事行政部
         attendanceMap.put("人事行政部", branchAttendance);
-        attendanceMap.put("网络部", branchAttendance);
+        // --网络部
+        Map<String, String> wangluo = new HashMap<>();
+        wangluo.put("startTime", "8:30");
+        wangluo.put("endTime", "17:00");
+        attendanceMap.put("网络部", wangluo);
+
         attendanceMap.put("稽查部", branchAttendance);
         attendanceMap.put("西语部课程", branchAttendance);
         attendanceMap.put("西语留学部", branchAttendance);
@@ -73,6 +96,7 @@ public class BaoBaoService {
         titleMap.put("date", "日期");
         titleMap.put("startTime", "上班时间");
         titleMap.put("endTime", "下班时间");
+        titleMap.put("record", "打卡记录");
         titleMap.put("reason", "原因");
         try {
             ExcelUtils.createFile(wb, titleMap, showList, "考勤表");
@@ -92,83 +116,103 @@ public class BaoBaoService {
             Map<String, List<Integer>> attendanceListMap = staff.getAttendance();
 
             // 判断开始时间、接收时间
-            Map<String, Integer> branchAttendance = attendanceMap.get(staff.getBranch());
+            Map<String, String> branchAttendance = attendanceMap.get(staff.getBranch());
             if (branchAttendance == null) {
                 System.out.println("部门=" + staff.getBranch() + " == null");
                 continue;
             }
-            int startTime = branchAttendance.get("startTime");
-            show.setStartTime(Integer.toString(startTime));
-            int endTime = branchAttendance.get("endTime");
-            show.setEndTime(Integer.toString(endTime));
+            int startTime = Integer.parseInt(branchAttendance.get("startTime").replace(":", ""));
+            show.setStartTime(branchAttendance.get("startTime"));
+            int endTime = Integer.parseInt(branchAttendance.get("endTime").replace(":", ""));
+            show.setEndTime(branchAttendance.get("endTime"));
 
             // 遍历每一天
-            for (Entry<String, List<Integer>> entry : attendanceListMap.entrySet()) {
-                StaffShow oneShow = new StaffShow();
-                try {
-                    BeanUtils.copyProperties(oneShow, show);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                List<Integer> oneDayAttendanceList = entry.getValue();
-                Date nowYearMonth = DateUtils.formatDateStr("2017-06-03", DateUtils.PATTERN_YEAR_MONTH);
-                Date oneDay = DateUtils.addDays(nowYearMonth, Integer.parseInt(entry.getKey()));
-                oneShow.setDate(DateUtils.formatDate(oneDay, DateUtils.PATTERN_DEFAULT));
-
-                // 根据部门区分休息日
-                Calendar ca = Calendar.getInstance();
-                ca.setTime(oneDay);
-                if (ca.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
-                        || ca.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                    list.add(oneShow);
-                    continue;
-                }
-
-                // 执行工作日
-                if (oneDayAttendanceList.size() == 1) {
-                    int time = oneDayAttendanceList.get(0);
-                    if (time == 0) {
-                        oneShow.setReason("没有考勤记录");
-                    } else if (time < 1200) {
-                        if (time > startTime) {
-                            oneShow.setReason("早晨迟到，晚上没有考勤记录");
-                        } else {
-                            oneShow.setReason("晚上没有考勤记录");
-                        }
-                    } else {
-                        if (time >= endTime) {
-                            oneShow.setReason("早晨没有考勤记录");
-                        } else {
-                            oneShow.setReason("晚上早退，早晨没有考勤记录");
-                        }
-                    }
-                } else {
-                    int startTimeTarget = oneDayAttendanceList.get(0);
-                    int endTimeTarget = oneDayAttendanceList.get(0);
-                    for (Integer integer : oneDayAttendanceList) {
-                        if (integer < startTimeTarget) {
-                            startTimeTarget = integer;
-                        }
-                        if (integer > endTimeTarget) {
-                            endTimeTarget = integer;
-                        }
-                    }
-
-                    if (startTimeTarget > startTime) {
-                        oneShow.setReason("迟到、");
-                    }
-                    if (endTimeTarget < endTime) {
-                        oneShow.setReason(show.getReason() + "早退、");
-                    }
-                }
-                list.add(oneShow);
-            }
+            forEachDay(attendanceListMap, show, startTime, endTime, list);
         }
         return list;
     }
 
+    /**
+     * @note 遍历每一天
+     */
+    private static void forEachDay(Map<String, List<Integer>> attendanceListMap, StaffShow show, int startTime,
+            int endTime, List<StaffShow> list) {
+        for (Entry<String, List<Integer>> entry : attendanceListMap.entrySet()) {
+            StaffShow oneShow = new StaffShow();
+            try {
+                BeanUtils.copyProperties(oneShow, show);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            List<Integer> oneDayAttendanceList = entry.getValue();
+            oneShow.setRecord(integerListToString(oneDayAttendanceList));
+            Date nowYearMonth = DateUtils.formatDateStr(MOUTNDATE, DateUtils.PATTERN_YEAR_MONTH);
+            Date oneDay = DateUtils.addDays(nowYearMonth, Integer.parseInt(entry.getKey()) - 1);
+            String nowDate = DateUtils.formatDate(oneDay, DateUtils.PATTERN_DEFAULT);
+            oneShow.setDate(nowDate + "---" + entry.getKey());
+
+            // 当前月份不是本月的话，不执行
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(oneDay);
+            int month = calendar.get(calendar.MONTH) + 1;
+            if (month != MONTH) {
+                continue;
+            }
+
+            // 根据部门区分休息日
+            Calendar ca = Calendar.getInstance();
+            ca.setTime(oneDay);
+            if (ca.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || ca.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                list.add(oneShow);
+                continue;
+            }
+
+            // 执行工作日
+            if (oneDayAttendanceList.size() == 1) {
+                int time = oneDayAttendanceList.get(0);
+                if (time == 0) {
+                    oneShow.setReason("没有考勤记录");
+                } else if (time < 1200) {
+                    if (time > startTime) {
+                        oneShow.setReason("早晨迟到，晚上没有考勤记录");
+                    } else {
+                        oneShow.setReason("晚上没有考勤记录");
+                    }
+                } else {
+                    if (time >= endTime) {
+                        oneShow.setReason("早晨没有考勤记录");
+                    } else {
+                        oneShow.setReason("晚上早退，早晨没有考勤记录");
+                    }
+                }
+            } else {
+                int startTimeTarget = oneDayAttendanceList.get(0);
+                int endTimeTarget = oneDayAttendanceList.get(0);
+                for (Integer integer : oneDayAttendanceList) {
+                    if (integer < startTimeTarget) {
+                        startTimeTarget = integer;
+                    }
+                    if (integer > endTimeTarget) {
+                        endTimeTarget = integer;
+                    }
+                }
+
+                if (startTimeTarget > startTime) {
+                    oneShow.setReason("迟到、");
+                }
+                if (endTimeTarget < endTime) {
+                    oneShow.setReason(show.getReason() + "早退、");
+                }
+            }
+            list.add(oneShow);
+        }
+    }
+
+    /**
+     * @note 读excel
+     */
     private static List<Staff> readExcel() {
         String url = "F:/baobao/11.xls";
         File file = new File(url);
@@ -186,7 +230,7 @@ public class BaoBaoService {
                 // 参数初始化
                 attendanceCounts = 0;
                 staff = new Staff();
-                attendance = new HashMap<>();
+                attendance = new LinkedHashMap<>();
                 addStaff(staff, recordCell);
             }
             if (firstName.equals("考勤")) {
@@ -222,12 +266,25 @@ public class BaoBaoService {
         }
     }
 
-    private static void addDateMap(Map<String, List<Integer>> attendance, String[] recordCell) {
-        for (int i = 1; i < recordCell.length; i++) {
-            attendance.put(recordCell[i], null);
+    /**
+     * @note integerList转String
+     */
+    private static String integerListToString(List<Integer> oneDayAttendanceList) {
+        StringBuilder builder = new StringBuilder();
+        for (Integer integer : oneDayAttendanceList) {
+            String sub = Integer.toString(integer);
+            if (sub.length() == 1) {
+                break;
+            }
+            builder.append(sub.substring(0, sub.length() - 2)).append(":")
+                    .append(sub.substring(sub.length() - 2, sub.length())).append(",");
         }
+        return builder.toString();
     }
 
+    /**
+     * @note 添加工号、姓名、部门
+     */
     private static void addStaff(Staff staff, String[] recordCell) {
         for (int i = 1; i < recordCell.length; i++) {
             String cell = recordCell[i].trim().replace(" ", "");

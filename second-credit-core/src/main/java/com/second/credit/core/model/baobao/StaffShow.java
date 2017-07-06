@@ -34,6 +34,11 @@ public class StaffShow implements Serializable {
     private String endTime;
 
     /**
+     * @note 打卡记录
+     */
+    private String record;
+
+    /**
      * @note 是否迟到
      */
     private boolean boo;
@@ -105,5 +110,13 @@ public class StaffShow implements Serializable {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getRecord() {
+        return record;
+    }
+
+    public void setRecord(String record) {
+        this.record = record;
     }
 }
