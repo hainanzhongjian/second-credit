@@ -31,45 +31,84 @@ public class BaoBaoService {
 
     static {
         attendanceMap = new HashMap<>();
-        Map<String, String> branchAttendance = new HashMap<>();
-        branchAttendance.put("startTime", "8:30");
-        branchAttendance.put("endTime", "17:30");
 
         // --财务部
         Map<String, String> caiwu = new HashMap<>();
         caiwu.put("startTime", "8:30");
-        caiwu.put("endTime", "17:00");
+        caiwu.put("endTime", "17:30");
         attendanceMap.put("财务部", caiwu);
+
         // --市场部
-        attendanceMap.put("市场部", branchAttendance);
-        // --留学部
-        attendanceMap.put("留学部", branchAttendance);
-        // --教学部
-        attendanceMap.put("教学部", branchAttendance);
-        // --意语部课程
-        Map<String, String> yiyu = new HashMap<>();
-        yiyu.put("startTime", "8:30");
-        yiyu.put("endTime", "17:30");
-        attendanceMap.put("意语部课程", yiyu);
-        // --产品创新
-        attendanceMap.put("产品创新", branchAttendance);
-        // --国际部
-        attendanceMap.put("国际部", branchAttendance);
-        // --人事行政部
-        attendanceMap.put("人事行政部", branchAttendance);
+        caiwu.put("startTime", "8:30");
+        caiwu.put("endTime", "17:30");
+        attendanceMap.put("市场部", caiwu);
+
         // --网络部
         Map<String, String> wangluo = new HashMap<>();
         wangluo.put("startTime", "8:30");
-        wangluo.put("endTime", "17:00");
+        wangluo.put("endTime", "17:30");
         attendanceMap.put("网络部", wangluo);
 
-        attendanceMap.put("稽查部", branchAttendance);
-        attendanceMap.put("西语部课程", branchAttendance);
-        attendanceMap.put("西语留学部", branchAttendance);
-        attendanceMap.put("教务部", branchAttendance);
-        attendanceMap.put("办公室", branchAttendance);
-        attendanceMap.put("网咨部", branchAttendance);
-        attendanceMap.put("策划部", branchAttendance);
+        // --教务部
+        Map<String, String> jiaoxue = new HashMap<>();
+        jiaoxue.put("startTime", "8:30");
+        jiaoxue.put("endTime", "17:30");
+        attendanceMap.put("教务部", jiaoxue);
+
+        // --留学部
+        Map<String, String> liuxue = new HashMap<>();
+        liuxue.put("startTime", "8:30");
+        liuxue.put("endTime", "17:30");
+        attendanceMap.put("留学部", liuxue);
+
+        // --人事行政部
+        Map<String, String> renshi = new HashMap<>();
+        renshi.put("startTime", "8:30");
+        renshi.put("endTime", "17:30");
+        attendanceMap.put("人事行政部", renshi);
+
+        // --意大利语部
+        Map<String, String> yiyu = new HashMap<>();
+        yiyu.put("startTime", "8:30");
+        yiyu.put("endTime", "17:30");
+        attendanceMap.put("意大利语部", yiyu);
+
+        // --网咨部
+        Map<String, String> wangzi = new HashMap<>();
+        wangzi.put("startTime", "8:30");
+        wangzi.put("endTime", "17:30");
+        attendanceMap.put("网咨部", wangzi);
+
+        // --西语课程部
+        Map<String, String> xibuyiyu = new HashMap<>();
+        xibuyiyu.put("startTime", "8:30");
+        xibuyiyu.put("endTime", "17:30");
+        attendanceMap.put("西语课程部", xibuyiyu);
+
+        // --国际部
+        Map<String, String> guoji = new HashMap<>();
+        guoji.put("startTime", "9:00");
+        guoji.put("endTime", "18:00");
+        attendanceMap.put("国际部", guoji);
+
+        // --产品开发部
+        Map<String, String> chanpinkaifa = new HashMap<>();
+        chanpinkaifa.put("startTime", "8:30");
+        chanpinkaifa.put("endTime", "17:30");
+        attendanceMap.put("产品开发部", chanpinkaifa);
+
+        // --稽查部
+        Map<String, String> jicha = new HashMap<>();
+        jicha.put("startTime", "8:30");
+        jicha.put("endTime", "17:30");
+        attendanceMap.put("稽查部", jicha);
+
+        // --营销中心
+        Map<String, String> yingxiao = new HashMap<>();
+        yingxiao.put("startTime", "8:30");
+        yingxiao.put("endTime", "17:30");
+        attendanceMap.put("营销中心", yingxiao);
+
     }
 
     public static void main(String[] args) {
