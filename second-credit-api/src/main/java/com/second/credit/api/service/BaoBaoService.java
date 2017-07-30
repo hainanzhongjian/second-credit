@@ -18,96 +18,136 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.second.credit.comm.utils.DateUtils;
 import com.second.credit.comm.utils.RegexUtils;
+import com.second.credit.core.model.baobao.Branch;
 import com.second.credit.core.model.baobao.Staff;
 import com.second.credit.core.model.baobao.StaffShow;
 import com.second.credit.core.utils.ExcelUtils;
 
 public class BaoBaoService {
 
-    static Map<String, Map<String, String>> attendanceMap;
+    static Map<String, Map<String, Branch>> branchMap;
 
     private final static String MOUTNDATE = "2017-05";
     private final static int MONTH = 5;
 
     static {
-        attendanceMap = new HashMap<>();
+
+        branchMap = new HashMap<>();
+
+        // 财务
+        Map<String, Branch> caiwuDayMap = new HashMap<>();
+        Branch caiwu = new Branch();
+        caiwu.setBranchName("caiwu");
+        caiwu.setWeek(1);
+        caiwu.setSleepTrue(false);
+        caiwu.setUpTime("08:30");
+        caiwu.setDownTime("17:30");
+        caiwuDayMap.put("1", caiwu);
+        caiwu.setWeek(2);
+        caiwuDayMap.put("2", caiwu);
+        caiwu.setWeek(3);
+        caiwuDayMap.put("3", caiwu);
+        caiwu.setWeek(4);
+        caiwuDayMap.put("4", caiwu);
+        caiwu.setWeek(5);
+        caiwuDayMap.put("5", caiwu);
+        caiwu.setWeek(6);
+        caiwu.setSleepTrue(true);
+        caiwuDayMap.put("6", caiwu);
+        caiwu.setWeek(7);
+        caiwu.setSleepTrue(true);
+        caiwuDayMap.put("7", caiwu);
+        branchMap.put("caiwu", caiwuDayMap);
 
         // --财务部
-        Map<String, String> caiwu = new HashMap<>();
-        caiwu.put("startTime", "8:30");
-        caiwu.put("endTime", "17:30");
-        attendanceMap.put("财务部", caiwu);
-
-        // --市场部
-        caiwu.put("startTime", "8:30");
-        caiwu.put("endTime", "17:30");
-        attendanceMap.put("市场部", caiwu);
-
-        // --网络部
-        Map<String, String> wangluo = new HashMap<>();
-        wangluo.put("startTime", "8:30");
-        wangluo.put("endTime", "17:30");
-        attendanceMap.put("网络部", wangluo);
-
-        // --教务部
-        Map<String, String> jiaoxue = new HashMap<>();
-        jiaoxue.put("startTime", "8:30");
-        jiaoxue.put("endTime", "17:30");
-        attendanceMap.put("教务部", jiaoxue);
-
-        // --留学部
-        Map<String, String> liuxue = new HashMap<>();
-        liuxue.put("startTime", "8:30");
-        liuxue.put("endTime", "17:30");
-        attendanceMap.put("留学部", liuxue);
-
-        // --人事行政部
-        Map<String, String> renshi = new HashMap<>();
-        renshi.put("startTime", "8:30");
-        renshi.put("endTime", "17:30");
-        attendanceMap.put("人事行政部", renshi);
-
-        // --意大利语部
-        Map<String, String> yiyu = new HashMap<>();
-        yiyu.put("startTime", "8:30");
-        yiyu.put("endTime", "17:30");
-        attendanceMap.put("意大利语部", yiyu);
-
-        // --网咨部
-        Map<String, String> wangzi = new HashMap<>();
-        wangzi.put("startTime", "8:30");
-        wangzi.put("endTime", "17:30");
-        attendanceMap.put("网咨部", wangzi);
-
-        // --西语课程部
-        Map<String, String> xibuyiyu = new HashMap<>();
-        xibuyiyu.put("startTime", "8:30");
-        xibuyiyu.put("endTime", "17:30");
-        attendanceMap.put("西语课程部", xibuyiyu);
-
-        // --国际部
-        Map<String, String> guoji = new HashMap<>();
-        guoji.put("startTime", "9:00");
-        guoji.put("endTime", "18:00");
-        attendanceMap.put("国际部", guoji);
-
-        // --产品开发部
-        Map<String, String> chanpinkaifa = new HashMap<>();
-        chanpinkaifa.put("startTime", "8:30");
-        chanpinkaifa.put("endTime", "17:30");
-        attendanceMap.put("产品开发部", chanpinkaifa);
-
-        // --稽查部
-        Map<String, String> jicha = new HashMap<>();
-        jicha.put("startTime", "8:30");
-        jicha.put("endTime", "17:30");
-        attendanceMap.put("稽查部", jicha);
-
-        // --营销中心
-        Map<String, String> yingxiao = new HashMap<>();
-        yingxiao.put("startTime", "8:30");
-        yingxiao.put("endTime", "17:30");
-        attendanceMap.put("营销中心", yingxiao);
+        // Rest caiwu = new Rest();
+        // caiwu.setStartTime("8:30");
+        // caiwu.setEndTime("17:30");
+        // caiwu.setRest(1);
+        // List<RestOther> otherList = new ArrayList<>();
+        // RestOther other = new RestOther();
+        // other.setRealName("宋海彦");
+        // List<String> weekRest = new ArrayList<>();
+        // weekRest.add("周日");
+        // weekRest.add("周一");
+        // other.setWeekRest(weekRest);
+        // Map<String, String> timeRest = new LinkedHashMap<>();
+        // timeRest.put("startTime", "all");
+        // timeRest.put("endTime", "all");
+        // other.setTimeRest(timeRest);
+        // caiwu.setOtherList(otherList);
+        // attendanceMap.put("财务部", caiwu);
+        //
+        // // --市场部
+        // caiwu.put("startTime", "8:30");
+        // caiwu.put("endTime", "17:30");
+        // attendanceMap.put("市场部", caiwu);
+        //
+        // // --网络部
+        // Map<String, String> wangluo = new HashMap<>();
+        // wangluo.put("startTime", "8:30");
+        // wangluo.put("endTime", "17:30");
+        // attendanceMap.put("网络部", wangluo);
+        //
+        // // --教务部
+        // Map<String, String> jiaoxue = new HashMap<>();
+        // jiaoxue.put("startTime", "8:30");
+        // jiaoxue.put("endTime", "17:30");
+        // attendanceMap.put("教务部", jiaoxue);
+        //
+        // // --留学部
+        // Map<String, String> liuxue = new HashMap<>();
+        // liuxue.put("startTime", "8:30");
+        // liuxue.put("endTime", "17:30");
+        // attendanceMap.put("留学部", liuxue);
+        //
+        // // --人事行政部
+        // Map<String, String> renshi = new HashMap<>();
+        // renshi.put("startTime", "8:30");
+        // renshi.put("endTime", "17:30");
+        // attendanceMap.put("人事行政部", renshi);
+        //
+        // // --意大利语部
+        // Map<String, String> yiyu = new HashMap<>();
+        // yiyu.put("startTime", "8:30");
+        // yiyu.put("endTime", "17:30");
+        // attendanceMap.put("意大利语部", yiyu);
+        //
+        // // --网咨部
+        // Map<String, String> wangzi = new HashMap<>();
+        // wangzi.put("startTime", "8:30");
+        // wangzi.put("endTime", "17:30");
+        // attendanceMap.put("网咨部", wangzi);
+        //
+        // // --西语课程部
+        // Map<String, String> xibuyiyu = new HashMap<>();
+        // xibuyiyu.put("startTime", "8:30");
+        // xibuyiyu.put("endTime", "17:30");
+        // attendanceMap.put("西语课程部", xibuyiyu);
+        //
+        // // --国际部
+        // Map<String, String> guoji = new HashMap<>();
+        // guoji.put("startTime", "9:00");
+        // guoji.put("endTime", "18:00");
+        // attendanceMap.put("国际部", guoji);
+        //
+        // // --产品开发部
+        // Map<String, String> chanpinkaifa = new HashMap<>();
+        // chanpinkaifa.put("startTime", "8:30");
+        // chanpinkaifa.put("endTime", "17:30");
+        // attendanceMap.put("产品开发部", chanpinkaifa);
+        //
+        // // --稽查部
+        // Map<String, String> jicha = new HashMap<>();
+        // jicha.put("startTime", "8:30");
+        // jicha.put("endTime", "17:30");
+        // attendanceMap.put("稽查部", jicha);
+        //
+        // // --营销中心
+        // Map<String, String> yingxiao = new HashMap<>();
+        // yingxiao.put("startTime", "8:30");
+        // yingxiao.put("endTime", "17:30");
+        // attendanceMap.put("营销中心", yingxiao);
 
     }
 
@@ -154,8 +194,9 @@ public class BaoBaoService {
             show.setRealName(staff.getRealName());
             Map<String, List<Integer>> attendanceListMap = staff.getAttendance();
 
+            // 获取上班时间节点
+            Map<String, Branch> branchAttendance = branchMap.get(staff.getBranch());
             // 判断开始时间、接收时间
-            Map<String, String> branchAttendance = attendanceMap.get(staff.getBranch());
             if (branchAttendance == null) {
                 System.out.println("部门=" + staff.getBranch() + " == null");
                 continue;
@@ -335,5 +376,45 @@ public class BaoBaoService {
                 staff.setBranch(regexMap.get("branch"));
             }
         }
+    }
+
+    /**
+     * @note 构造原始数据
+     * @author wangmeng
+     * @return
+     * @date 2017年7月31日 上午12:18:29
+     */
+    public static Map<String, Map<String, Branch>> createSourceDate(String branchName) {
+        Map<String, Map<String, Branch>> branchMap = new HashMap<>();
+
+        if ("caiwu".equals(branchName)) {
+            // 财务
+            Map<String, Branch> caiwuDayMap = new HashMap<>();
+            Branch caiwu = new Branch();
+            caiwu.setBranchName("caiwu");
+            caiwu.setWeek(1);
+            caiwu.setSleepTrue(false);
+            caiwu.setUpTime("08:30");
+            caiwu.setDownTime("17:30");
+            caiwuDayMap.put("1", caiwu);
+            caiwu.setWeek(2);
+            caiwuDayMap.put("2", caiwu);
+            caiwu.setWeek(3);
+            caiwuDayMap.put("3", caiwu);
+            caiwu.setWeek(4);
+            caiwuDayMap.put("4", caiwu);
+            caiwu.setWeek(5);
+            caiwuDayMap.put("5", caiwu);
+            caiwu.setWeek(6);
+            caiwu.setSleepTrue(true);
+            caiwuDayMap.put("6", caiwu);
+            caiwu.setWeek(7);
+            caiwu.setSleepTrue(true);
+            caiwuDayMap.put("7", caiwu);
+            branchMap.put("caiwu", caiwuDayMap);
+
+        }
+
+        return branchMap;
     }
 }
