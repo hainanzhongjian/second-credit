@@ -44,6 +44,7 @@ public class BaoBaoService {
         caiwu.setDownTime("17:30");
         caiwuDayMap.put("1", caiwu);
         caiwu.setWeek(2);
+        caiwu.setSleepTrue(false);
         caiwuDayMap.put("2", caiwu);
         caiwu.setWeek(3);
         caiwuDayMap.put("3", caiwu);
