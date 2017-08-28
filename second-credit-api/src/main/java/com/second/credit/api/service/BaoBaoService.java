@@ -25,131 +25,14 @@ import com.second.credit.core.utils.ExcelUtils;
 
 public class BaoBaoService {
 
-    static Map<String, Map<String, Branch>> branchMap;
+    static Map<String, Map<Integer, Branch>> branchMap;
 
     private final static String MOUTNDATE = "2017-05";
     private final static int MONTH = 5;
 
     static {
-
-        branchMap = new HashMap<>();
-
-        // 财务
-        Map<String, Branch> caiwuDayMap = new HashMap<>();
-        Branch caiwu = new Branch();
-        caiwu.setBranchName("caiwu");
-        caiwu.setWeek(1);
-        caiwu.setSleepTrue(false);
-        caiwu.setUpTime("08:30");
-        caiwu.setDownTime("17:30");
-        caiwuDayMap.put("1", caiwu);
-        caiwu.setWeek(2);
-        caiwu.setSleepTrue(false);
-        caiwuDayMap.put("2", caiwu);
-        caiwu.setWeek(3);
-        caiwuDayMap.put("3", caiwu);
-        caiwu.setWeek(4);
-        caiwuDayMap.put("4", caiwu);
-        caiwu.setWeek(5);
-        caiwuDayMap.put("5", caiwu);
-        caiwu.setWeek(6);
-        caiwu.setSleepTrue(true);
-        caiwuDayMap.put("6", caiwu);
-        caiwu.setWeek(7);
-        caiwu.setSleepTrue(true);
-        caiwuDayMap.put("7", caiwu);
-        branchMap.put("caiwu", caiwuDayMap);
-
-        // --财务部
-        // Rest caiwu = new Rest();
-        // caiwu.setStartTime("8:30");
-        // caiwu.setEndTime("17:30");
-        // caiwu.setRest(1);
-        // List<RestOther> otherList = new ArrayList<>();
-        // RestOther other = new RestOther();
-        // other.setRealName("宋海彦");
-        // List<String> weekRest = new ArrayList<>();
-        // weekRest.add("周日");
-        // weekRest.add("周一");
-        // other.setWeekRest(weekRest);
-        // Map<String, String> timeRest = new LinkedHashMap<>();
-        // timeRest.put("startTime", "all");
-        // timeRest.put("endTime", "all");
-        // other.setTimeRest(timeRest);
-        // caiwu.setOtherList(otherList);
-        // attendanceMap.put("财务部", caiwu);
-        //
-        // // --市场部
-        // caiwu.put("startTime", "8:30");
-        // caiwu.put("endTime", "17:30");
-        // attendanceMap.put("市场部", caiwu);
-        //
-        // // --网络部
-        // Map<String, String> wangluo = new HashMap<>();
-        // wangluo.put("startTime", "8:30");
-        // wangluo.put("endTime", "17:30");
-        // attendanceMap.put("网络部", wangluo);
-        //
-        // // --教务部
-        // Map<String, String> jiaoxue = new HashMap<>();
-        // jiaoxue.put("startTime", "8:30");
-        // jiaoxue.put("endTime", "17:30");
-        // attendanceMap.put("教务部", jiaoxue);
-        //
-        // // --留学部
-        // Map<String, String> liuxue = new HashMap<>();
-        // liuxue.put("startTime", "8:30");
-        // liuxue.put("endTime", "17:30");
-        // attendanceMap.put("留学部", liuxue);
-        //
-        // // --人事行政部
-        // Map<String, String> renshi = new HashMap<>();
-        // renshi.put("startTime", "8:30");
-        // renshi.put("endTime", "17:30");
-        // attendanceMap.put("人事行政部", renshi);
-        //
-        // // --意大利语部
-        // Map<String, String> yiyu = new HashMap<>();
-        // yiyu.put("startTime", "8:30");
-        // yiyu.put("endTime", "17:30");
-        // attendanceMap.put("意大利语部", yiyu);
-        //
-        // // --网咨部
-        // Map<String, String> wangzi = new HashMap<>();
-        // wangzi.put("startTime", "8:30");
-        // wangzi.put("endTime", "17:30");
-        // attendanceMap.put("网咨部", wangzi);
-        //
-        // // --西语课程部
-        // Map<String, String> xibuyiyu = new HashMap<>();
-        // xibuyiyu.put("startTime", "8:30");
-        // xibuyiyu.put("endTime", "17:30");
-        // attendanceMap.put("西语课程部", xibuyiyu);
-        //
-        // // --国际部
-        // Map<String, String> guoji = new HashMap<>();
-        // guoji.put("startTime", "9:00");
-        // guoji.put("endTime", "18:00");
-        // attendanceMap.put("国际部", guoji);
-        //
-        // // --产品开发部
-        // Map<String, String> chanpinkaifa = new HashMap<>();
-        // chanpinkaifa.put("startTime", "8:30");
-        // chanpinkaifa.put("endTime", "17:30");
-        // attendanceMap.put("产品开发部", chanpinkaifa);
-        //
-        // // --稽查部
-        // Map<String, String> jicha = new HashMap<>();
-        // jicha.put("startTime", "8:30");
-        // jicha.put("endTime", "17:30");
-        // attendanceMap.put("稽查部", jicha);
-        //
-        // // --营销中心
-        // Map<String, String> yingxiao = new HashMap<>();
-        // yingxiao.put("startTime", "8:30");
-        // yingxiao.put("endTime", "17:30");
-        // attendanceMap.put("营销中心", yingxiao);
-
+        // 加载部门考勤信息
+        branchMap = readBranchDetailExcel();
     }
 
     public static void main(String[] args) {
@@ -166,6 +49,7 @@ public class BaoBaoService {
     private static void writeExcel(List<Staff> staffList) {
         // model 转换
         List<StaffShow> showList = transform(staffList);
+        System.out.println(11);
 
         String url = "F:/baobao/target.xls";
         Workbook wb = ExcelUtils.createWorkbook();
@@ -196,28 +80,67 @@ public class BaoBaoService {
             Map<String, List<Integer>> attendanceListMap = staff.getAttendance();
 
             // 获取上班时间节点
-            Map<String, Branch> branchAttendance = branchMap.get(staff.getBranch());
-            // 判断开始时间、接收时间
-            if (branchAttendance == null) {
-                System.out.println("部门=" + staff.getBranch() + " == null");
+            Map<Integer, Branch> weekMap = branchMap.get(transformBranchName(staff.getBranch()));
+            if (weekMap == null || weekMap.size() == 0) {
+                System.out.println("部门=" + staff.getBranch() + " == null 考勤详细表中没有记录该部门");
                 continue;
             }
-            int startTime = Integer.parseInt(branchAttendance.get("startTime").replace(":", ""));
-            show.setStartTime(branchAttendance.get("startTime"));
-            int endTime = Integer.parseInt(branchAttendance.get("endTime").replace(":", ""));
-            show.setEndTime(branchAttendance.get("endTime"));
 
             // 遍历每一天
-            forEachDay(attendanceListMap, show, startTime, endTime, list);
+            forEachDay(attendanceListMap, show, weekMap, list);
         }
         return list;
     }
 
     /**
+     * @note 部门名称转换
+     * @param branch
+     * @return
+     * @author wangmeng
+     * @date 2017年8月28日 上午12:07:09
+     */
+    private static String transformBranchName(String branch) {
+        if (StringUtils.isEmpty(branch)) {
+            return "";
+        }
+        if (branch.equals("财务部") || branch.equals("财务")) {
+            return "caiwu";
+        }
+        return "";
+    }
+
+    /**
+     * @note 转换星期日期
+     * @param javaWeek
+     * @return
+     * @author wangmeng
+     * @date 2017年8月27日 下午11:37:34
+     */
+    private static int transformWeek(int javaWeek) {
+        switch (javaWeek) {
+            case Calendar.SUNDAY:
+                return 7;
+            case Calendar.MONDAY:
+                return 1;
+            case Calendar.TUESDAY:
+                return 2;
+            case Calendar.WEDNESDAY:
+                return 3;
+            case Calendar.THURSDAY:
+                return 4;
+            case Calendar.FRIDAY:
+                return 5;
+            case Calendar.SATURDAY:
+                return 6;
+        }
+        return javaWeek;
+    }
+
+    /**
      * @note 遍历每一天
      */
-    private static void forEachDay(Map<String, List<Integer>> attendanceListMap, StaffShow show, int startTime,
-            int endTime, List<StaffShow> list) {
+    private static void forEachDay(Map<String, List<Integer>> attendanceListMap, StaffShow show,
+            Map<Integer, Branch> weekMap, List<StaffShow> list) {
         for (Entry<String, List<Integer>> entry : attendanceListMap.entrySet()) {
             StaffShow oneShow = new StaffShow();
             try {
@@ -245,10 +168,21 @@ public class BaoBaoService {
             // 根据部门区分休息日
             Calendar ca = Calendar.getInstance();
             ca.setTime(oneDay);
-            if (ca.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || ca.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                list.add(oneShow);
+
+            // 获取当天的考勤详细信息
+            int weekDay = transformWeek(ca.get(Calendar.DAY_OF_WEEK));
+            Branch branch = weekMap.get(weekDay);
+
+            // 休息日判断
+            if (branch.sleepTrue) {
+                oneShow.setReason("休息日");
+                System.out.println("今天是休息日");
                 continue;
             }
+
+            // 当天的上班时间和下班时间
+            int startTime = Integer.parseInt(branch.getUpTime().replace(":", ""));
+            int endTime = Integer.parseInt(branch.getDownTime().replace(":", ""));
 
             // 执行工作日
             if (oneDayAttendanceList.size() == 1) {
@@ -289,6 +223,38 @@ public class BaoBaoService {
             }
             list.add(oneShow);
         }
+    }
+
+    /**
+     * @note 读部门考勤详细excel
+     */
+    private static Map<String, Map<Integer, Branch>> readBranchDetailExcel() {
+        // String url = "F:/baobao/kaoqin-detail.xls";
+        String url = "F:/baobao/112.xls";
+        File file = new File(url);
+        List<String[]> excelList = ExcelUtils.readExcel(file, 1);
+
+        Map<String, Map<Integer, Branch>> branchMap = new HashMap<>();
+        Map<Integer, Branch> weekMap = new HashMap<>();
+        for (int i = 0; i < excelList.size(); i++) {
+
+            // 每7条记录作为一个周对象
+            String[] branchDetailArray = excelList.get(i);
+            int week = i % 7;
+            if (week == 0 && i != 0) {
+                branchMap.put(weekMap.get(1).getBranchName(), weekMap);
+                weekMap = new HashMap<>();
+            }
+            Branch branch = new Branch();
+            branch.setBranchName(branchDetailArray[0]);
+            branch.setWeek(Integer.parseInt(branchDetailArray[1]));
+            branch.setUpTime(branchDetailArray[2]);
+            branch.setDownTime(branchDetailArray[3]);
+            boolean boo = branchDetailArray[4].equals("Y") ? true : false;
+            branch.setSleepTrue(boo);
+            weekMap.put(week + 1, branch);
+        }
+        return branchMap;
     }
 
     /**
@@ -413,9 +379,7 @@ public class BaoBaoService {
             caiwu.setSleepTrue(true);
             caiwuDayMap.put("7", caiwu);
             branchMap.put("caiwu", caiwuDayMap);
-
         }
-
         return branchMap;
     }
 }
