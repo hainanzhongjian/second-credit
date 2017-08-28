@@ -19,6 +19,11 @@ public class Branch implements Serializable {
     public String branchName;
 
     /**
+     * @note 姓名
+     */
+    public String realName;
+
+    /**
      * @note 1，2，3，4，5，6，7分别代表周一到周日
      * @author wangmeng
      * @date 2017年7月31日 上午12:15:56
@@ -84,5 +89,13 @@ public class Branch implements Serializable {
 
     public void setDownTime(String downTime) {
         this.downTime = downTime;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 }

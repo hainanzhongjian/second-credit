@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -26,6 +27,7 @@ import com.second.credit.core.utils.ExcelUtils;
 public class BaoBaoService {
 
     static Map<String, Map<Integer, Branch>> branchMap;
+    static Map<String, Map<Integer, Branch>> branchOtherMap;
 
     private final static String MOUTNDATE = "2017-05";
     private final static int MONTH = 5;
@@ -33,6 +35,8 @@ public class BaoBaoService {
     static {
         // 加载部门考勤信息
         branchMap = readBranchDetailExcel();
+        // 加载部门考勤信息
+        branchOtherMap = readBranchDetailOtherExcel();
     }
 
     public static void main(String[] args) {
@@ -79,8 +83,17 @@ public class BaoBaoService {
             show.setRealName(staff.getRealName());
             Map<String, List<Integer>> attendanceListMap = staff.getAttendance();
 
-            // 获取上班时间节点
-            Map<Integer, Branch> weekMap = branchMap.get(transformBranchName(staff.getBranch()));
+            // 部门名称-拼音
+            Map<Integer, Branch> weekMap = null;
+            String branchName = transformBranchName(staff.getBranch());
+
+            // 在考勤例外因素中存在，则获取例外因素的，不存在，则不获取
+            Map<Integer, Branch> otherWeekMap = branchOtherMap.get(branchName + "+" + staff.getRealName());
+            if (MapUtils.isEmpty(otherWeekMap)) {
+                weekMap = branchMap.get(branchName);
+            } else {
+                weekMap = otherWeekMap;
+            }
             if (weekMap == null || weekMap.size() == 0) {
                 System.out.println("部门=" + staff.getBranch() + " == null 考勤详细表中没有记录该部门");
                 continue;
@@ -105,6 +118,8 @@ public class BaoBaoService {
         }
         if (branch.equals("财务部") || branch.equals("财务")) {
             return "caiwu";
+        } else if (branch.equals("营销中心") || branch.equals("营销")) {
+            return "yingxiao";
         }
         return "";
     }
@@ -255,6 +270,39 @@ public class BaoBaoService {
             weekMap.put(week + 1, branch);
         }
         return branchMap;
+    }
+
+    /**
+     * @note 读部门考勤详细-otherexcel
+     */
+    private static Map<String, Map<Integer, Branch>> readBranchDetailOtherExcel() {
+        // String url = "F:/baobao/kaoqin-detail.xls";
+        String url = "F:/baobao/kaoqin-detail-other.xls";
+        File file = new File(url);
+        List<String[]> excelList = ExcelUtils.readExcel(file, 1);
+
+        Map<String, Map<Integer, Branch>> branchRealNameMap = new HashMap<>();
+        Map<Integer, Branch> weekMap = new HashMap<>();
+        for (int i = 0; i < excelList.size(); i++) {
+
+            // 每7条记录作为一个员工对象
+            String[] branchDetailArray = excelList.get(i);
+            int week = i % 7;
+            if (week == 0 && i != 0) {
+                // 部门 - 姓名 组成一个map
+                branchRealNameMap.put(weekMap.get(1).getBranchName() + "-" + weekMap.get(1).getRealName(), weekMap);
+                weekMap = new HashMap<>();
+            }
+            Branch branch = new Branch();
+            branch.setBranchName(branchDetailArray[0]);
+            branch.setRealName(branchDetailArray[1]);
+            branch.setWeek(Integer.parseInt(branchDetailArray[2]));
+            branch.setUpTime(branchDetailArray[3]);
+            branch.setDownTime(branchDetailArray[4]);
+            branch.setSleepTrue(branchDetailArray[4].equals("Y") ? true : false);
+            weekMap.put(week + 1, branch);
+        }
+        return branchRealNameMap;
     }
 
     /**
