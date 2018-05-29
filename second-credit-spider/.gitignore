@@ -1,1 +1,7 @@
-/target/
+# Created by .ignore support plugin (hsz.mobi)
+.idea/*
+target/*
+.gitignore
+*.MF
+out/*
+airflow-scripts.iml

@@ -64,7 +64,7 @@
   </properties>
   
 	<repositories>
-		<repository>
+<!--		<repository>
 			<id>puhuifinance</id>
 			<name>Maven of Puhuifinance.com</name>
 			<url>http://inside.puhuifinance.com/nexus/content/groups/public/</url>
@@ -87,7 +87,19 @@
 				<enabled>true</enabled>
 			</snapshots>
 			<layout>default</layout>
-		</repository>
+		</repository>-->
+        <repository>
+            <id>jboss</id>
+            <name>Maven of jboss.org</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <layout>default</layout>
+        </repository>
 	</repositories>
 
   	<!-- 核心资源�? -->
